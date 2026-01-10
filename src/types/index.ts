@@ -31,11 +31,7 @@ export interface IBuyer {
 }
 
 // Заказ
-export interface IOrder {
-  payment: TPayment;
-  email: string;
-  phone: string;
-  address: string;
+export interface IOrder extends IBuyer {
   items: string[];
   total: number;
 }
