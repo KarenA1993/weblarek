@@ -1,6 +1,6 @@
-import { Api } from "./Api";
-import { IProduct, IOrder } from "../../types";
-import { PRODUCT_URL, ORDER_URL } from "../../utils/constants";
+import { Api } from "./base/Api";
+import { IProduct, IOrder } from "../types";
+import { PRODUCT_URL, ORDER_URL } from "../utils/constants";
 
 export class LarekApi {
   private api: Api;
