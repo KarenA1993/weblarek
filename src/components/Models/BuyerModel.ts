@@ -1,4 +1,5 @@
 import { IBuyer, TPayment } from "../../types";
+import { IEvents } from "../base/Events";
 
 export class BuyerModel {
   private payment: TPayment | "" = "";
@@ -6,6 +7,7 @@ export class BuyerModel {
   private phone = "";
   private address = "";
 
+  constructor(private events: IEvents) {}
   // Сохранить данные покупателя(частично или полностью)
   setData(data: Partial<IBuyer>): void {
     if (data.payment !== undefined) {
@@ -20,6 +22,7 @@ export class BuyerModel {
     if (data.address !== undefined) {
       this.address = data.address;
     }
+    this.events.emit("buyer:changed");
   }
 
   // Получить данные покупателя
@@ -38,6 +41,7 @@ export class BuyerModel {
     this.email = "";
     this.phone = "";
     this.address = "";
+    this.events.emit("buyer:changed");
   }
 
   // Валидация данных покупателя

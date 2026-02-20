@@ -1,8 +1,11 @@
 import { IProduct } from "../../types";
+import { IEvents } from "../base/Events";
 
 export class BasketModel {
   // Товары добавленные в корзину
   private items: IProduct[] = [];
+
+  constructor(private events: IEvents) {}
 
   //Получить все товары в корзине
   getItems(): IProduct[] {
@@ -13,17 +16,20 @@ export class BasketModel {
   addItem(item: IProduct): void {
     if (!this.hasItem(item.id)) {
       this.items.push(item);
+      this.events.emit("basket:changed");
     }
   }
 
   // Удалить товар из корзины
   removeItem(item: IProduct): void {
     this.items = this.items.filter((i) => i.id !== item.id);
+    this.events.emit("basket:changed");
   }
 
   // Очистить корзину
   clear(): void {
     this.items = [];
+    this.events.emit("basket:changed");
   }
 
   // получить общую стоимость товаров

@@ -5,7 +5,7 @@ export interface IApi {
   post<T extends object>(
     uri: string,
     data: object,
-    method?: ApiPostMethods
+    method?: ApiPostMethods,
   ): Promise<T>;
 }
 
@@ -35,3 +35,9 @@ export interface IOrder extends IBuyer {
   items: string[];
   total: number;
 }
+
+// Результат создания заказа
+export type TOrderResponse = {
+  total: number;
+  id?: string;
+};
