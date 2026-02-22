@@ -1,9 +1,7 @@
-import { IEvents } from "../base/Events";
 import { CardBase } from "./CardBase";
 
 export interface ICardBasketProps {
   index: number;
-  id: string;
   title: string;
   price: number | null;
 }
@@ -14,8 +12,11 @@ export class CardBasket extends CardBase<ICardBasketProps> {
   protected _price: HTMLElement;
   protected _deleteButton: HTMLButtonElement;
 
-  constructor(container: HTMLLIElement, events: IEvents) {
-    super(container, events);
+  constructor(
+    container: HTMLLIElement,
+    private onRemove: () => void,
+  ) {
+    super(container);
 
     this._index = this.container.querySelector(
       ".basket__item-index",
@@ -27,9 +28,7 @@ export class CardBasket extends CardBase<ICardBasketProps> {
     ) as HTMLButtonElement;
 
     this._deleteButton.addEventListener("click", () => {
-      if (this._id) {
-        this.events.emit("basket:remove", { id: this._id });
-      }
+      this.onRemove();
     });
   }
 
@@ -42,10 +41,6 @@ export class CardBasket extends CardBase<ICardBasketProps> {
   }
 
   set price(value: number | null) {
-    if (value === null) {
-      this._price.textContent = "Бесценно";
-      return;
-    }
-    this._price.textContent = `${value.toLocaleString("ru-RU")} синапсов`;
+    this._price.textContent = this.formatPrice(value);
   }
 }

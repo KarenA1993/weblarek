@@ -25,36 +25,26 @@ export class ContactsForm extends FormBase<IContactsFormData> {
 
     this._email.addEventListener("input", () => {
       this.events.emit("buyer:update", { email: this._email.value });
-      this.validate();
     });
 
     this._phone.addEventListener("input", () => {
       this.events.emit("buyer:update", { phone: this._phone.value });
-      this.validate();
     });
-
-    this.validate();
   }
 
   set email(value: string) {
     this._email.value = value ?? "";
-    this.validate();
   }
 
   set phone(value: string) {
     this._phone.value = value ?? "";
-    this.validate();
   }
 
-  validate(): void {
-    const emailOk = this._email.value.trim().length > 0;
-    const phoneOk = this._phone.value.trim().length > 0;
-
-    const errors: string[] = [];
-    if (!emailOk) errors.push("Введите email");
-    if (!phoneOk) errors.push("Введите телефон");
-
-    this.errors = errors.join(". ");
-    this.valid = errors.length === 0;
+  render(data?: Partial<IContactsFormData>): HTMLElement {
+    if (data?.email !== undefined) this.email = data.email;
+    if (data?.phone !== undefined) this.phone = data.phone;
+    if (data?.errors !== undefined) this.errors = data.errors;
+    if (data?.valid !== undefined) this.valid = data.valid;
+    return this.container;
   }
 }

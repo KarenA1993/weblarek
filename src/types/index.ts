@@ -38,6 +38,6 @@ export interface IOrder extends IBuyer {
 
 // Результат создания заказа
 export type TOrderResponse = {
+  id: string;
   total: number;
-  id?: string;
 };

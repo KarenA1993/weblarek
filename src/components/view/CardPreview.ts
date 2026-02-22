@@ -1,6 +1,7 @@
 import { IEvents } from "../base/Events";
 import { IProduct } from "../../types";
 import { CardBase } from "./CardBase";
+import { CDN_URL, categoryMap } from "../../utils/constants";
 
 export class CardPreview extends CardBase<IProduct> {
   protected _image: HTMLImageElement;
@@ -10,34 +11,22 @@ export class CardPreview extends CardBase<IProduct> {
   protected _price: HTMLElement;
   protected _button: HTMLButtonElement;
 
-  private _inBasket = false;
+  constructor(
+    container: HTMLElement,
+    protected events: IEvents,
+  ) {
+    super(container);
 
-  constructor(container: HTMLElement, events: IEvents) {
-    super(container, events);
-
-    this._image = this.container.querySelector(
-      ".card__image",
-    ) as HTMLImageElement;
-    this._title = this.container.querySelector(".card__title") as HTMLElement;
-    this._category = this.container.querySelector(
-      ".card__category",
-    ) as HTMLElement;
-    this._description = this.container.querySelector(
-      ".card__text",
-    ) as HTMLElement;
-    this._price = this.container.querySelector(".card__price") as HTMLElement;
-    this._button = this.container.querySelector(
-      ".card__button",
-    ) as HTMLButtonElement;
+    this._image = this.container.querySelector(".card__image")!;
+    this._title = this.container.querySelector(".card__title")!;
+    this._category = this.container.querySelector(".card__category")!;
+    this._description = this.container.querySelector(".card__text")!;
+    this._price = this.container.querySelector(".card__price")!;
+    this._button = this.container.querySelector(".card__button")!;
 
     this._button.addEventListener("click", () => {
-      if (!this._id || this._button.disabled) return;
-
-      if (this._inBasket) {
-        this.events.emit("basket:remove", { id: this._id });
-      } else {
-        this.events.emit("basket:add", { id: this._id });
-      }
+      if (this._button.disabled) return;
+      this.events.emit("preview:action");
     });
   }
 
@@ -50,32 +39,30 @@ export class CardPreview extends CardBase<IProduct> {
   }
 
   set image(value: string) {
-    this.setCdnImage(this._image, value, this._title.textContent || "");
+    this.setImage(
+      this._image,
+      `${CDN_URL}/${value}`,
+      this._title.textContent || "",
+    );
   }
 
   set price(value: number | null) {
-    if (value === null) {
-      this._price.textContent = "Бесценно";
-      this._button.textContent = "Недоступно";
-      this._button.disabled = true;
-      this._inBasket = false;
-      return;
-    }
-
-    this._price.textContent = `${value.toLocaleString("ru-RU")} синапсов`;
-    this._button.disabled = false;
-
-    // если товар доступен — текст кнопки зависит от состояния
-    this._button.textContent = this._inBasket ? "Удалить из корзины" : "Купить";
+    this._price.textContent = this.formatPrice(value);
   }
 
   set category(value: string) {
-    this.setCategory(this._category, value);
+    this._category.textContent = value;
+    const className =
+      categoryMap[value as keyof typeof categoryMap] || "card__category_other";
+    this._category.className = `card__category ${className}`;
   }
 
-  set inBasket(value: boolean) {
-    this._inBasket = value;
-    if (this._button.disabled) return;
-    this._button.textContent = value ? "Удалить из корзины" : "Купить";
+  // Управление кнопкой снаружи (текст + disabled)
+  set buttonText(value: string) {
+    this._button.textContent = value;
+  }
+
+  set buttonDisabled(value: boolean) {
+    this._button.disabled = value;
   }
 }

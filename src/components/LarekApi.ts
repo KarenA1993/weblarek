@@ -1,5 +1,5 @@
 import { Api } from "./base/Api";
-import { IProduct, IOrder } from "../types";
+import { IProduct, IOrder, TOrderResponse } from "../types";
 import { PRODUCT_URL, ORDER_URL } from "../utils/constants";
 
 export class LarekApi {
@@ -17,7 +17,7 @@ export class LarekApi {
   }
 
   // Отправить заказ
-  postOrder(order: IOrder): Promise<unknown> {
-    return this.api.post(ORDER_URL, order);
+  postOrder(order: IOrder): Promise<TOrderResponse> {
+    return this.api.post<TOrderResponse>(ORDER_URL, order);
   }
 }

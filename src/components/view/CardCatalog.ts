@@ -1,6 +1,6 @@
-import { IEvents } from "../base/Events";
 import { IProduct } from "../../types";
 import { CardBase } from "./CardBase";
+import { CDN_URL, categoryMap } from "../../utils/constants";
 
 export class CardCatalog extends CardBase<IProduct> {
   protected _title: HTMLElement;
@@ -8,23 +8,19 @@ export class CardCatalog extends CardBase<IProduct> {
   protected _price: HTMLElement;
   protected _category: HTMLElement;
 
-  constructor(container: HTMLElement, events: IEvents) {
-    super(container, events);
+  constructor(
+    container: HTMLElement,
+    private onSelect: () => void,
+  ) {
+    super(container);
 
-    this._title = this.container.querySelector(".card__title") as HTMLElement;
-    this._image = this.container.querySelector(
-      ".card__image",
-    ) as HTMLImageElement;
-    this._price = this.container.querySelector(".card__price") as HTMLElement;
-    this._category = this.container.querySelector(
-      ".card__category",
-    ) as HTMLElement;
+    this._title = this.container.querySelector(".card__title")!;
+    this._image = this.container.querySelector(".card__image")!;
+    this._price = this.container.querySelector(".card__price")!;
+    this._category = this.container.querySelector(".card__category")!;
 
     this.container.addEventListener("click", () => {
-      const id = this.container.dataset.id;
-      if (id) {
-        this.events.emit("card:select", { id });
-      }
+      this.onSelect();
     });
   }
 
@@ -33,7 +29,11 @@ export class CardCatalog extends CardBase<IProduct> {
   }
 
   set image(value: string) {
-    this.setCdnImage(this._image, value, this._title.textContent || "");
+    this.setImage(
+      this._image,
+      `${CDN_URL}/${value}`,
+      this._title.textContent || "",
+    );
   }
 
   set price(value: number | null) {
@@ -41,6 +41,9 @@ export class CardCatalog extends CardBase<IProduct> {
   }
 
   set category(value: string) {
-    this.setCategory(this._category, value);
+    this._category.textContent = value;
+    const className =
+      categoryMap[value as keyof typeof categoryMap] || "card__category_other";
+    this._category.className = `card__category ${className}`;
   }
 }

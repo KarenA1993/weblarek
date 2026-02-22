@@ -1,7 +1,7 @@
 import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
 
-export abstract class FormBase<T> extends Component<T> {
+export class FormBase<T> extends Component<T> {
   protected _submit: HTMLButtonElement;
   protected _errors: HTMLElement;
 
@@ -20,7 +20,6 @@ export abstract class FormBase<T> extends Component<T> {
 
     this.container.addEventListener("submit", (e) => {
       e.preventDefault();
-      this.validate();
       if (!this._submit.disabled) {
         this.events.emit(this.submitEventName);
       }
@@ -34,6 +33,4 @@ export abstract class FormBase<T> extends Component<T> {
   set valid(value: boolean) {
     this._submit.disabled = !value;
   }
-
-  abstract validate(): void;
 }
