@@ -23,7 +23,7 @@ import { OrderForm } from "./components/view/OrderForm";
 import { ContactsForm } from "./components/view/ContactsForm";
 import { Success } from "./components/view/Success";
 
-import { IOrder, IBuyer, TOrderResponse, TPayment } from "./types";
+import { IOrder, IBuyer, TOrderResponse } from "./types";
 
 /**
  * Инициализация API
@@ -149,7 +149,6 @@ larekApi
  * Presenter state
  * =========================
  */
-let activeStep: "order" | "contacts" | null = null;
 
 const setOrderFormState = (): void => {
   const buyer = buyerModel.getData();
@@ -160,7 +159,7 @@ const setOrderFormState = (): void => {
   if (errors.address) list.push(errors.address);
 
   orderForm.render({
-    payment: (buyer.payment as unknown as TPayment) ?? "",
+    payment: buyer.payment ?? "",
     address: buyer.address ?? "",
     errors: list.join(". "),
     valid: list.length === 0,
@@ -171,9 +170,7 @@ const setContactsFormState = (): void => {
   const buyer = buyerModel.getData();
   const errors = buyerModel.validate();
 
-  const list: string[] = [];
-  if (errors.email) list.push(errors.email);
-  if (errors.phone) list.push(errors.phone);
+  const list = [errors.email, errors.phone].filter(Boolean) as string[];
 
   contactsForm.render({
     email: buyer.email ?? "",
@@ -324,7 +321,6 @@ events.on("buyer:changed", () => {
 
 // Открытие формы заказа
 events.on("order:open", () => {
-  activeStep = "order";
   setOrderFormState();
   modal.content = orderForm.render();
   modal.open();
@@ -332,7 +328,6 @@ events.on("order:open", () => {
 
 // Переход ко второй форме
 events.on("order:submit", () => {
-  activeStep = "contacts";
   setContactsFormState();
   modal.content = contactsForm.render();
   modal.open();
@@ -358,7 +353,6 @@ events.on("contacts:submit", () => {
 
       basketModel.clear();
       buyerModel.clear();
-      activeStep = null;
     })
     .catch((error) => {
       console.error("Ошибка оформления заказа:", error);
@@ -367,9 +361,4 @@ events.on("contacts:submit", () => {
 
 events.on("success:close", () => {
   modal.close();
-  activeStep = null;
-});
-
-events.on("modal:close", () => {
-  activeStep = null;
 });

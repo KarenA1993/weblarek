@@ -13,8 +13,6 @@ export class OrderForm extends FormBase<IOrderFormData> {
   protected _buttons: HTMLButtonElement[];
   protected _address: HTMLInputElement;
 
-  protected _payment: TPayment | "" = "";
-
   constructor(container: HTMLFormElement, events: IEvents) {
     super(container, events, "order:submit");
 
@@ -41,7 +39,6 @@ export class OrderForm extends FormBase<IOrderFormData> {
   }
 
   set payment(value: TPayment | "") {
-    this._payment = value;
     this._buttons.forEach((btn) => {
       btn.classList.toggle("button_alt-active", btn.name === value);
     });
